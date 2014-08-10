@@ -61,7 +61,7 @@ func (c *SFV) Verify() (bool, error) {
 func parseChecksum(dir string, s string) (*Checksum, error) {
 	words := strings.SplitN(s, " ", 2)
 	if len(words) != 2 {
-		return nil, fmt.Errorf("expected 2 words, got %s", len(words))
+		return nil, fmt.Errorf("expected 2 words, got %d", len(words))
 	}
 
 	filename := words[0]
