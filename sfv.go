@@ -1,3 +1,5 @@
+// Package sfv provides a simple way of reading and verifying SFV (Simple File
+// Verification) files.
 package sfv
 
 import (
@@ -11,16 +13,21 @@ import (
 	"strings"
 )
 
+// Checksum represents a line in a SFV file, containing the filename, full path
+// to the file and the CRC32 checksum
 type Checksum struct {
 	Filename string
 	Path     string
 	CRC32    uint32
 }
 
+// SFV contains all the checksums read from a SFV file.
 type SFV struct {
 	Checksums []Checksum
 }
 
+// Verify calculates the CRC32 of the associated file and returns true if the
+// checksum is correct.
 func (c *Checksum) Verify() (bool, error) {
 	f, err := os.Open(c.Path)
 	if err != nil {
@@ -45,6 +52,8 @@ func (c *Checksum) Verify() (bool, error) {
 	return success, nil
 }
 
+// Verify verifies all checksums contained in SFV and returns true if all
+// checksums are correct.
 func (c *SFV) Verify() (bool, error) {
 	for _, c := range c.Checksums {
 		ok, err := c.Verify()
@@ -79,6 +88,8 @@ func parseChecksum(dir string, s string) (*Checksum, error) {
 	}, nil
 }
 
+// Read reades a SFV file from filepath and creates a new SFV containing
+// checksums parsed from the SFV file.
 func Read(filepath string) (*SFV, error) {
 	f, err := os.Open(filepath)
 	if err != nil {
