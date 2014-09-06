@@ -24,6 +24,7 @@ type Checksum struct {
 // SFV contains all the checksums read from a SFV file.
 type SFV struct {
 	Checksums []Checksum
+	Path      string
 }
 
 // Verify calculates the CRC32 of the associated file and returns true if the
@@ -133,5 +134,8 @@ func Read(filepath string) (*SFV, error) {
 		return nil, err
 	}
 
-	return &SFV{Checksums: checksums}, nil
+	return &SFV{
+		Checksums: checksums,
+		Path:      filepath,
+	}, nil
 }
