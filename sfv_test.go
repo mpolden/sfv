@@ -80,6 +80,10 @@ func TestRead(t *testing.T) {
 		}
 	}()
 
+	if exist := sfv.IsExist(); !exist {
+		t.Fatal("Expected true, got false")
+	}
+
 	ok, err := sfv.Verify()
 	if err != nil {
 		t.Fatal(err)

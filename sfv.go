@@ -52,10 +52,17 @@ func (c *Checksum) Verify() (bool, error) {
 	return success, nil
 }
 
+// IsExist returns a boolean indicating if the file associated with the checksum
+// exists
+func (c *Checksum) IsExist() bool {
+	_, err := os.Stat(c.Path)
+	return err == nil
+}
+
 // Verify verifies all checksums contained in SFV and returns true if all
 // checksums are correct.
-func (c *SFV) Verify() (bool, error) {
-	for _, c := range c.Checksums {
+func (s *SFV) Verify() (bool, error) {
+	for _, c := range s.Checksums {
 		ok, err := c.Verify()
 		if err != nil {
 			return false, err
@@ -65,6 +72,16 @@ func (c *SFV) Verify() (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+// IsExist returns a boolean if all the files in SFV exists
+func (s *SFV) IsExist() bool {
+	for _, c := range s.Checksums {
+		if !c.IsExist() {
+			return false
+		}
+	}
+	return true
 }
 
 func parseChecksum(dir string, s string) (*Checksum, error) {
