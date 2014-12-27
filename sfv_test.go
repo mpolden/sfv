@@ -58,6 +58,34 @@ func createSFVFile() (*os.File, error) {
 	return sfvFile, nil
 }
 
+func TestParseChecksum(t *testing.T) {
+	line := "foo 7E3265A8"
+	checksum, err := ParseChecksum("/tmp", line)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if expected := "/tmp/foo"; checksum.Path != expected {
+		t.Fatalf("Expected %s, got %s", expected, checksum.Path)
+	}
+	if expected := uint32(2117232040); checksum.CRC32 != expected {
+		t.Fatalf("Expected %s, got %s", expected, checksum.CRC32)
+	}
+}
+
+func TestParseChecksumWhitespace(t *testing.T) {
+	line := "foo     \t7E3265A8"
+	checksum, err := ParseChecksum("/tmp", line)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if expected := "/tmp/foo"; checksum.Path != expected {
+		t.Fatalf("Expected %s, got %s", expected, checksum.Path)
+	}
+	if expected := uint32(2117232040); checksum.CRC32 != expected {
+		t.Fatalf("Expected %s, got %s", expected, checksum.CRC32)
+	}
+}
+
 func TestRead(t *testing.T) {
 	f, err := createSFVFile()
 	if err != nil {
