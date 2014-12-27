@@ -85,8 +85,8 @@ func (s *SFV) IsExist() bool {
 	return true
 }
 
-func parseChecksum(dir string, s string) (*Checksum, error) {
-	words := strings.SplitN(s, " ", 2)
+func ParseChecksum(dir string, line string) (*Checksum, error) {
+	words := strings.SplitN(line, " ", 2)
 	if len(words) != 2 {
 		return nil, fmt.Errorf("expected 2 words, got %d", len(words))
 	}
@@ -123,7 +123,7 @@ func Read(filepath string) (*SFV, error) {
 		if len(line) == 0 || strings.HasPrefix(line, ";") {
 			continue
 		}
-		checksum, err := parseChecksum(dir, line)
+		checksum, err := ParseChecksum(dir, line)
 		if err != nil {
 			return nil, err
 		}
