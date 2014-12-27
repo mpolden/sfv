@@ -96,22 +96,17 @@ func TestRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() {
-		if sfv != nil {
-			for _, c := range sfv.Checksums {
-				if err := os.Remove(c.Path); err != nil {
-					t.Fatal(err)
-				}
-			}
+		for _, c := range sfv.Checksums {
+			os.Remove(c.Path) // Ignore error
 		}
-		if err := os.Remove(f.Name()); err != nil {
-			t.Fatal(err)
-		}
+		os.Remove(sfv.Path) // Ignore error
 	}()
-
+	if path := f.Name(); sfv.Path != path {
+		t.Fatalf("Expected %s, got %s", path, sfv.Path)
+	}
 	if exist := sfv.IsExist(); !exist {
 		t.Fatal("Expected true, got false")
 	}
-
 	ok, err := sfv.Verify()
 	if err != nil {
 		t.Fatal(err)
