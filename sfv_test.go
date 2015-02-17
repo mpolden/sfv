@@ -115,3 +115,10 @@ func TestRead(t *testing.T) {
 		t.Fatal("Expected true, got false")
 	}
 }
+
+func TestEmptySFV(t *testing.T) {
+	sfv := SFV{Path: "/tmp/sfv.sfv"}
+	if _, err := sfv.Verify(); err == nil {
+		t.Fatal("Expected error")
+	}
+}

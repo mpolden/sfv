@@ -63,6 +63,9 @@ func (c *Checksum) IsExist() bool {
 // Verify verifies all checksums contained in SFV and returns true if all
 // checksums are correct.
 func (s *SFV) Verify() (bool, error) {
+	if len(s.Checksums) == 0 {
+		return false, fmt.Errorf("no checksums found in %s", s.Path)
+	}
 	for _, c := range s.Checksums {
 		ok, err := c.Verify()
 		if err != nil {
