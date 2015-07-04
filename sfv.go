@@ -96,7 +96,7 @@ func ParseChecksum(dir string, line string) (*Checksum, error) {
 
 	filename := words[0]
 	path := path.Join(dir, filename)
-	crcString := strings.TrimLeft(words[1], " \t")
+	crcString := strings.Trim(words[1], " \t\r\n")
 	crc32, err := strconv.ParseUint(crcString, 16, 32)
 	if err != nil {
 		return nil, err
