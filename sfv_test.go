@@ -70,7 +70,7 @@ func TestParseChecksum(t *testing.T) {
 		t.Fatalf("Expected %s, got %s", expected, checksum.Path)
 	}
 	if expected := uint32(2117232040); checksum.CRC32 != expected {
-		t.Fatalf("Expected %s, got %s", expected, checksum.CRC32)
+		t.Fatalf("Expected %d, got %d", expected, checksum.CRC32)
 	}
 }
 
