@@ -49,8 +49,7 @@ func (c *Checksum) Verify() (bool, error) {
 		}
 		h.Write(buf[:n])
 	}
-	success := h.Sum32() == c.CRC32
-	return success, nil
+	return h.Sum32() == c.CRC32, nil
 }
 
 // IsExist returns a boolean indicating if the file associated with the checksum
@@ -88,16 +87,14 @@ func (s *SFV) IsExist() bool {
 	return true
 }
 
-func ParseChecksum(dir string, line string) (*Checksum, error) {
-	words := strings.SplitN(line, " ", 2)
-	if len(words) != 2 {
-		return nil, fmt.Errorf("expected 2 words, got %d", len(words))
+func parseChecksum(dir string, line string) (*Checksum, error) {
+	parts := strings.SplitN(line, " ", 2)
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("could not parse checksum: %q", line)
 	}
-
-	filename := words[0]
+	filename := strings.TrimSpace(parts[0])
 	path := path.Join(dir, filename)
-	crcString := strings.Trim(words[1], " \t\r\n")
-	crc32, err := strconv.ParseUint(crcString, 16, 32)
+	crc32, err := strconv.ParseUint(strings.TrimSpace(parts[1]), 16, 32)
 	if err != nil {
 		return nil, err
 	}
@@ -107,6 +104,26 @@ func ParseChecksum(dir string, line string) (*Checksum, error) {
 		Filename: filename,
 		CRC32:    uint32(crc32),
 	}, nil
+}
+
+func parseChecksums(dir string, r io.Reader) ([]Checksum, error) {
+	checksums := []Checksum{}
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if len(line) == 0 || strings.HasPrefix(line, ";") {
+			continue
+		}
+		checksum, err := parseChecksum(dir, line)
+		if err != nil {
+			return nil, err
+		}
+		checksums = append(checksums, *checksum)
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return checksums, nil
 }
 
 // Read reades a SFV file from filepath and creates a new SFV containing
@@ -119,24 +136,10 @@ func Read(filepath string) (*SFV, error) {
 	defer f.Close()
 
 	dir := path.Dir(filepath)
-	checksums := []Checksum{}
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := strings.Trim(scanner.Text(), " \t")
-		if len(line) == 0 || strings.HasPrefix(line, ";") {
-			continue
-		}
-		checksum, err := ParseChecksum(dir, line)
-		if err != nil {
-			return nil, err
-		}
-		checksums = append(checksums, *checksum)
-	}
-
-	if err := scanner.Err(); err != nil {
+	checksums, err := parseChecksums(dir, f)
+	if err != nil {
 		return nil, err
 	}
-
 	return &SFV{
 		Checksums: checksums,
 		Path:      filepath,

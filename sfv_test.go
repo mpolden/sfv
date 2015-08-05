@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"reflect"
+	"strings"
 	"testing"
 	"text/template"
 )
@@ -60,7 +62,7 @@ func createSFVFile() (*os.File, error) {
 
 func TestParseChecksum(t *testing.T) {
 	line := "foo 7E3265A8"
-	checksum, err := ParseChecksum("/tmp", line)
+	checksum, err := parseChecksum("/tmp", line)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,31 +74,24 @@ func TestParseChecksum(t *testing.T) {
 	}
 }
 
-func TestParseChecksumWhitespace(t *testing.T) {
-	line := "foo     \t7E3265A8"
-	checksum, err := ParseChecksum("/tmp", line)
+func TestParseChecksums(t *testing.T) {
+	in := "; comment\n" +
+		"file1  7E3265A8\n" +
+		"file2 04A2B3E7\r\n" +
+		"file3 04A2B3E9\n" +
+		"file4 \t04A2B3E6"
+	out := []Checksum{
+		Checksum{Path: "/tmp/file1", Filename: "file1", CRC32: 2117232040},
+		Checksum{Path: "/tmp/file2", Filename: "file2", CRC32: 77771751},
+		Checksum{Path: "/tmp/file3", Filename: "file3", CRC32: 77771753},
+		Checksum{Path: "/tmp/file4", Filename: "file4", CRC32: 77771750},
+	}
+	checksums, err := parseChecksums("/tmp", strings.NewReader(in))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if expected := "/tmp/foo"; checksum.Path != expected {
-		t.Fatalf("Expected %s, got %s", expected, checksum.Path)
-	}
-	if expected := uint32(2117232040); checksum.CRC32 != expected {
-		t.Fatalf("Expected %s, got %s", expected, checksum.CRC32)
-	}
-}
-
-func TestParseChecksumNewline(t *testing.T) {
-	line := "foo 7E3265A8\r\n"
-	checksum, err := ParseChecksum("/tmp", line)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if expected := "/tmp/foo"; checksum.Path != expected {
-		t.Fatalf("Expected %s, got %s", expected, checksum.Path)
-	}
-	if expected := uint32(2117232040); checksum.CRC32 != expected {
-		t.Fatalf("Expected %s, got %s", expected, checksum.CRC32)
+	if !reflect.DeepEqual(checksums, out) {
+		t.Fatalf("Expected %+v, got %+v", out, checksums)
 	}
 }
 
