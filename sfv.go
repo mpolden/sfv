@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -126,7 +128,7 @@ func parseChecksums(dir string, r io.Reader) ([]Checksum, error) {
 	return checksums, nil
 }
 
-// Read reades a SFV file from filepath and creates a new SFV containing
+// Read reads a SFV file from filepath and creates a new SFV containing
 // checksums parsed from the SFV file.
 func Read(filepath string) (*SFV, error) {
 	f, err := os.Open(filepath)
@@ -144,4 +146,19 @@ func Read(filepath string) (*SFV, error) {
 		Checksums: checksums,
 		Path:      filepath,
 	}, nil
+}
+
+// Find tries to find a SFV file in the given path. If multiple SFV files exist
+// in path, the first one will be returned.
+func Find(path string) (*SFV, error) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range files {
+		if filepath.Ext(f.Name()) == ".sfv" {
+			return Read(filepath.Join(path, f.Name()))
+		}
+	}
+	return nil, fmt.Errorf("no sfv found in %s", path)
 }
