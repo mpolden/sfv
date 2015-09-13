@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -122,6 +123,30 @@ func TestRead(t *testing.T) {
 	}
 	if !ok {
 		t.Fatal("Expected true, got false")
+	}
+}
+
+func TestFind(t *testing.T) {
+	dir, err := ioutil.TempDir("", "gosfv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	// No SFV file in dir should result in error
+	if _, err := Find(dir); err == nil {
+		t.Fatal("Expected error")
+	}
+	filepath := filepath.Join(dir, "test.sfv")
+	if err := ioutil.WriteFile(filepath, []byte{}, 0600); err != nil {
+		t.Fatal(err)
+	}
+	sfv, err := Find(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sfv.Path != filepath {
+		t.Fatalf("Expected %q, got %q", filepath, sfv.Path)
 	}
 }
 
