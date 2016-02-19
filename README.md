@@ -1,6 +1,6 @@
 # gosfv
 
-[![Build Status](https://travis-ci.org/martinp/gosfv.png)](https://travis-ci.org/martinp/gosfv)
+[![Build Status](https://travis-ci.org/martinp/gosfv.svg)](https://travis-ci.org/martinp/gosfv)
 
 gosfv is a [Go](http://golang.org) library for verifying
 [SFV files](https://en.wikipedia.org/wiki/Simple_file_verification).
