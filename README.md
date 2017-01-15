@@ -1,13 +1,13 @@
-# gosfv
+# sfv
 
-[![Build Status](https://travis-ci.org/martinp/gosfv.svg)](https://travis-ci.org/martinp/gosfv)
+[![Build Status](https://travis-ci.org/martinp/sfv.svg)](https://travis-ci.org/martinp/sfv)
 
-gosfv is a [Go](http://golang.org) library for verifying
+sfv is a [Go](http://golang.org) package for verifying
 [SFV files](https://en.wikipedia.org/wiki/Simple_file_verification).
 
 ## Installation
 
-`$ go get github.com/martinp/gosfv`
+`$ go get github.com/martinp/sfv`
 
 ## Example
 
@@ -15,7 +15,7 @@ gosfv is a [Go](http://golang.org) library for verifying
 package main
 
 import (
-	"github.com/martinp/gosfv"
+	"github.com/martinp/sfv"
 	"log"
 )
 
