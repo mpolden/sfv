@@ -1,6 +1,6 @@
 # sfv
 
-[![Build Status](https://travis-ci.org/martinp/sfv.svg)](https://travis-ci.org/martinp/sfv)
+[![Build Status](https://travis-ci.org/mpolden/sfv.svg)](https://travis-ci.org/mpolden/sfv)
 
 sfv is a [Go](http://golang.org) package for verifying
 [SFV files](https://en.wikipedia.org/wiki/Simple_file_verification).
