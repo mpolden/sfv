@@ -7,7 +7,7 @@ sfv is a [Go](http://golang.org) package for verifying
 
 ## Installation
 
-`$ go get github.com/martinp/sfv`
+`$ go get github.com/mpolden/sfv`
 
 ## Example
 
@@ -15,7 +15,7 @@ sfv is a [Go](http://golang.org) package for verifying
 package main
 
 import (
-	"github.com/martinp/sfv"
+	"github.com/mpolden/sfv"
 	"log"
 )
 
